@@ -9,6 +9,12 @@ public class WiDevice {
     private Double signalStrength;
     private String hwAddress;
 
+
+    public WiDevice(String name, Double signalStrength, String hwAddress){
+        this.name = name;
+        this.signalStrength = signalStrength;
+        this.hwAddress = hwAddress;
+    }
     public String getName() {
         return name;
     }

@@ -21,7 +21,10 @@ public class WiDeviceAdapter extends RecyclerView.Adapter<WiDeviceAdapter.WiDevi
 
     Context context;
     List<WiDevice> devices;
-
+    public WiDeviceAdapter(Context context, List<WiDevice> devices){
+        this.context = context;
+        this.devices = devices;
+    }
     public class WiDeviceHolder extends RecyclerView.ViewHolder {
         ImageView img;
         TextView name;
@@ -42,13 +45,12 @@ public class WiDeviceAdapter extends RecyclerView.Adapter<WiDeviceAdapter.WiDevi
     @Override
     public WiDeviceAdapter.WiDeviceHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.wi_device_item, parent, false));
+                .inflate(R.layout.wi_device_item, parent, false);
         return new WiDeviceHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(WiDeviceAdapter.WiDeviceHolder holder, int position, List payloads) {
-        super.onBindViewHolder(holder, position, payloads);
+    public void onBindViewHolder(WiDeviceAdapter.WiDeviceHolder holder, int position) {
         holder.bindHolder(devices.get(position));
     }
 

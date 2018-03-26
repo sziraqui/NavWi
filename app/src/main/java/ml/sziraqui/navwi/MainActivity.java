@@ -4,10 +4,17 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import java.util.ArrayList;
+
+import ml.sziraqui.navwi.POJO.WiDevice;
+import ml.sziraqui.navwi.adapters.WiDeviceAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,6 +33,17 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        ArrayList<WiDevice> devices = new ArrayList<>();
+        devices.add(new WiDevice("szi's F1s",-12.93, "q123:1312:ade1:2eee"));
+        WiDeviceAdapter adapter = new WiDeviceAdapter(this, devices);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
