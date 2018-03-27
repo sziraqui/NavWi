@@ -1,8 +1,12 @@
 package ml.sziraqui.navwi;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -18,11 +22,18 @@ import android.view.MenuItem;
 import java.util.ArrayList;
 
 import ml.sziraqui.navwi.adapters.WiDeviceAdapter;
+import ml.sziraqui.navwi.sensors.WifiBR;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 1001;
+
     CoordinatorLayout root;
     ArrayList<ScanResult> devices;
+    WiDeviceAdapter adapter;
+    WifiManager wifiManager;
+    WifiBR wifiReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,31 +55,45 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         devices = new ArrayList<>();
 
-        WiDeviceAdapter adapter = new WiDeviceAdapter(this, devices);
+        adapter = new WiDeviceAdapter(this, devices);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+
+            requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        scanWifi();
 
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(wifiReceiver);
+       // wifiManager.setWifiEnabled(false);
     }
 
     private void scanWifi() {
 
-        WifiManager wifiManager = startWifiIfDisabled();
+        wifiManager = startWifiIfDisabled();
+        wifiReceiver = new WifiBR(wifiManager, devices, adapter);
+        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        wifiManager.startScan();
 
     }
 
     private WifiManager startWifiIfDisabled(){
-        WifiManager wifiManager = (WifiManager) getApplication()
-                .getApplicationContext()
-                .getSystemService(Context.WIFI_SERVICE);
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if(!wifiManager.isWifiEnabled()) {
             Snackbar
-                    .make(root,"Turning on Wifi", Snackbar.LENGTH_INDEFINITE)
+                    .make(root,"Turning on Wifi", Snackbar.LENGTH_SHORT)
                     .show();
             wifiManager.setWifiEnabled(true);
             
