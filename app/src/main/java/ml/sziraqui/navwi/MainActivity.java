@@ -141,8 +141,9 @@ public class MainActivity extends AppCompatActivity {
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_CODE_ACCESS_LOCATION);
             } else {
-                devices = (ArrayList<ScanResult>) ((WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE))
+                ArrayList<ScanResult> scanResults = (ArrayList<ScanResult>) ((WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE))
                         .getScanResults();
+                devices.addAll(scanResults);
                 if(devices.size() > 0) {
                     adapter.notifyDataSetChanged();
                     Log.d("log", "ScanResult " + devices.get(0).SSID);

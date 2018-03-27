@@ -37,7 +37,7 @@ public class WiDeviceAdapter extends RecyclerView.Adapter<WiDeviceAdapter.WiDevi
         }
 
         public void bindHolder(ScanResult device) {
-            name.setText(device.BSSID);
+            name.setText(device.SSID);
             value.setText(String.valueOf(device.level));
         }
     }
