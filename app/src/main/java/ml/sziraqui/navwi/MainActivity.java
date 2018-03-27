@@ -21,7 +21,12 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Date;
 
 import ml.sziraqui.navwi.adapters.WiDeviceAdapter;
 
@@ -49,7 +54,14 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Saving as text file", Snackbar.LENGTH_LONG)
+                String filename = saveScanResult(devices);
+                String msg;
+                if (filename.equals("")){
+                    msg = "Error saving file!";
+                } else {
+                    msg = "Scan result saved!";
+                }
+                Snackbar.make(view, msg, Snackbar.LENGTH_LONG)
                         .setAction("OK", null).show();
             }
         });
@@ -98,6 +110,26 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    public String saveScanResult(ArrayList<ScanResult> scanResults){
+        StringBuilder data = new StringBuilder("Sr No,Time,BSSID,SSID,Strength\n");
+        for(int i = 0; i < scanResults.size(); i++){
+            data.append(i+","+(new Date())+","+scanResults.get(i).BSSID+","+scanResults.get(i).SSID+","+scanResults.get(i).level+"\n");
+        }
+
+        File path = getExternalFilesDir(null);
+        String filename = "ScanResults_"+(new Date())+".csv";
+        File file = new File(path, filename);
+
+        try {
+            FileOutputStream stream = new FileOutputStream(file);
+            stream.write(new String(data).getBytes());
+        } catch (IOException ioe) {
+            Log.e("saveScanResult","IO error");
+        }
+        return filename;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
