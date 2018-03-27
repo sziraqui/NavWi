@@ -24,7 +24,7 @@ import android.view.MenuItem;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -44,13 +44,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.d("onCreate","in oncreate");
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         root = findViewById(R.id.root_view);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,22 +72,21 @@ public class MainActivity extends AppCompatActivity {
         adapter = new WiDeviceAdapter(this, devices);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
-        Log.d("onCreate","in oncreate");
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         scanWifi();
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(wifiReceiver);
-       // wifiManager.setWifiEnabled(false);
     }
+
 
     public void scanWifi() {
 
@@ -139,14 +138,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            return true;
+            devices.clear();
+            adapter.notifyDataSetChanged();
         }
 
         return super.onOptionsItemSelected(item);
@@ -169,10 +167,15 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             Log.d("log","WifiBR.onReceive()");
             if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSIONS_REQUEST_CODE_ACCESS_LOCATION);
+                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION},
+                        PERMISSIONS_REQUEST_CODE_ACCESS_LOCATION);
             } else {
-                ArrayList<ScanResult> scanResults = (ArrayList<ScanResult>) ((WifiManager) context.getApplicationContext().getSystemService(WIFI_SERVICE))
+                ArrayList<ScanResult> scanResults = (ArrayList<ScanResult>) ((WifiManager) context
+                        .getApplicationContext()
+                        .getSystemService(WIFI_SERVICE))
                         .getScanResults();
+
                 devices.addAll(scanResults);
                 if(devices.size() > 0) {
                     adapter.notifyDataSetChanged();
