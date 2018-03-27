@@ -1,6 +1,10 @@
 package ml.sziraqui.navwi;
 
+import android.content.Context;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,17 +17,20 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 
-import ml.sziraqui.navwi.POJO.WiDevice;
 import ml.sziraqui.navwi.adapters.WiDeviceAdapter;
 
 public class MainActivity extends AppCompatActivity {
 
+    CoordinatorLayout root;
+    ArrayList<ScanResult> devices;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        root = findViewById(R.id.root_view);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -33,19 +40,41 @@ public class MainActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        ArrayList<WiDevice> devices = new ArrayList<>();
-        devices.add(new WiDevice("szi's F1s",-12.93, "q123:1312:ade1:2eee"));
+        devices = new ArrayList<>();
+
         WiDeviceAdapter adapter = new WiDeviceAdapter(this, devices);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+
+    }
+
+    private void scanWifi() {
+
+        WifiManager wifiManager = startWifiIfDisabled();
+
+    }
+
+    private WifiManager startWifiIfDisabled(){
+        WifiManager wifiManager = (WifiManager) getApplication()
+                .getApplicationContext()
+                .getSystemService(Context.WIFI_SERVICE);
+        if(!wifiManager.isWifiEnabled()) {
+            Snackbar
+                    .make(root,"Turning on Wifi", Snackbar.LENGTH_INDEFINITE)
+                    .show();
+            wifiManager.setWifiEnabled(true);
+            
+        }
+        return wifiManager;
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

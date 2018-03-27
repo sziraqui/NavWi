@@ -1,6 +1,7 @@
 package ml.sziraqui.navwi.adapters;
 
 import android.content.Context;
+import android.net.wifi.ScanResult;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,7 +11,6 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import ml.sziraqui.navwi.POJO.WiDevice;
 import ml.sziraqui.navwi.R;
 
 /**
@@ -20,8 +20,8 @@ import ml.sziraqui.navwi.R;
 public class WiDeviceAdapter extends RecyclerView.Adapter<WiDeviceAdapter.WiDeviceHolder> {
 
     Context context;
-    List<WiDevice> devices;
-    public WiDeviceAdapter(Context context, List<WiDevice> devices){
+    List<ScanResult> devices;
+    public WiDeviceAdapter(Context context, List<ScanResult> devices){
         this.context = context;
         this.devices = devices;
     }
@@ -36,9 +36,9 @@ public class WiDeviceAdapter extends RecyclerView.Adapter<WiDeviceAdapter.WiDevi
             value = itemView.findViewById(R.id.widevice_signal_value_tv);
         }
 
-        public void bindHolder(WiDevice device) {
-            name.setText(device.getName());
-            value.setText(""+device.getSignalStrength());
+        public void bindHolder(ScanResult device) {
+            name.setText(device.BSSID);
+            value.setText(String.valueOf(device.level));
         }
     }
 
