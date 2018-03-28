@@ -111,9 +111,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String saveScanResult(ArrayList<ScanResult> scanResults){
-        StringBuilder data = new StringBuilder("Sr No,Time,BSSID,SSID,Strength\n");
+        StringBuilder data = new StringBuilder("Sr No,Time,BSSID,SSID,Strength,Quality\n");
         for(int i = 0; i < scanResults.size(); i++){
-            data.append(i+","+(new Date())+","+scanResults.get(i).BSSID+","+scanResults.get(i).SSID+","+scanResults.get(i).level+"\n");
+            data.append(i+","+(new Date())+","+scanResults.get(i).BSSID+","+scanResults.get(i).SSID+","+scanResults.get(i).level+","+signalQuality(scanResults.get(i).level)+"\n");
         }
 
         File path = getExternalFilesDir(null);
@@ -150,6 +150,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public String signalQuality(double level){
+        if(level > -20){
+            return "Excellent";
+        } else if(level > - 60) {
+            return "Good";
+        } else return "Poor";
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
